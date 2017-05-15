@@ -1,11 +1,8 @@
-package com.hhspls.voicerecognition;
+package com.hhspls.voicerecognition.api;
 
 import android.content.Context;
-import android.graphics.Path;
 
 import com.google.cloud.speech.spi.v1.SpeechClient;
-import com.google.cloud.speech.spi.v1.SpeechSettings;
-import com.google.protobuf.ByteString;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -14,11 +11,13 @@ import java.nio.file.*;
  * Created by Sean on 15-5-2017.
  */
 
-public class GoogleSpeech implements ApiInterface {
+public class GoogleSpeech extends AbstractApi {
 
     SpeechClient speechClient;
-    @Override
-    public void init(Context context) {
+
+    public GoogleSpeech(Context context)
+    {
+        super(context);
         try {
             speechClient = SpeechClient.create();
         } catch (IOException e) {
@@ -27,17 +26,17 @@ public class GoogleSpeech implements ApiInterface {
     }
 
     @Override
-    public void startListening() {
-        
-    }
-
-    @Override
-    public void stopListening() {
+    void startListeningImpl() {
 
     }
 
     @Override
-    public void cancel() {
+    void stopListeningImpl() {
+
+    }
+
+    @Override
+    void cancelImpl() {
 
     }
 }

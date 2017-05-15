@@ -1,4 +1,4 @@
-package com.hhspls.voicerecognition;
+package com.hhspls.voicerecognition.api;
 
 import android.content.Context;
 import android.util.Log;
@@ -14,7 +14,7 @@ import ai.api.model.Result;
  * Created by Sean on 15-5-2017.
  */
 
-public class ApiAi implements ApiInterface {
+public class ApiAi extends AbstractApi {
     private static final String TAG = "ApiAi";
     public final AIConfiguration configuration = new AIConfiguration(
             "",
@@ -60,26 +60,25 @@ public class ApiAi implements ApiInterface {
         }
     };
 
-    @Override
-    public void init(Context context) {
+    public ApiAi(Context context) {
+        super(context);
         aiService = AIService.getService(context, configuration);
         aiService.setListener(aiListener);
-//        aiService.startListening();
-
     }
 
+
     @Override
-    public void startListening() {
+    void startListeningImpl() {
         aiService.startListening();
     }
 
     @Override
-    public void stopListening() {
+    void stopListeningImpl() {
         aiService.stopListening();
     }
 
     @Override
-    public void cancel() {
+    void cancelImpl() {
         aiService.cancel();
     }
 }
