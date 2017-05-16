@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by Sean on 15-5-2017.
@@ -12,12 +13,15 @@ import java.io.Serializable;
 public abstract class AbstractApi implements Serializable{
     private static final String TAG = "AbstractApi";
     boolean isListening = false;
+    public ListenListener listener;
 
     public AbstractApi(Context context)
     {
-
     }
-
+    public void setListener(ListenListener listener)
+    {
+        this.listener = listener;
+    }
     final public void startListening()
     {
         if(!isListening) {
@@ -25,7 +29,10 @@ public abstract class AbstractApi implements Serializable{
             startListeningImpl();
         }
         else
+        {
             Log.d(TAG, "startListening: Already listening");
+            listener.createToast("Already listening");
+        }
     }
     final public void stopListening()
     {
@@ -45,5 +52,11 @@ public abstract class AbstractApi implements Serializable{
 
     public boolean isListening() {
         return isListening;
+    }
+
+
+
+    public interface ListenListener{
+        void createToast(String text);
     }
 }

@@ -17,45 +17,53 @@ import ai.api.model.Result;
 public class ApiAi extends AbstractApi {
     private static final String TAG = "ApiAi";
     public final AIConfiguration configuration = new AIConfiguration(
-            "",
-            AIConfiguration.SupportedLanguages.Dutch,
-            AIConfiguration.RecognitionEngine.System); // TODO: 15-5-2017 add client access token
+            "a29126364251489493ec9d78b6e3c420",
+            AIConfiguration.SupportedLanguages.English,
+            AIConfiguration.RecognitionEngine.System);
 
     AIService aiService;
 
     AIListener aiListener = new AIListener() {
         @Override
         public void onResult(AIResponse response) {
+            listener.createToast("onResult");
+
             final Result result = response.getResult();
 
             Log.i(TAG, "Resolved query: " + result.getResolvedQuery());
             Log.i(TAG, "Action: " + result.getAction());
             Log.i(TAG, "Speech: " + result.getFulfillment().getSpeech());
-
+            listener.createToast("Resolved query: " + result.getResolvedQuery());
         }
 
         @Override
         public void onError(AIError error) {
+            listener.createToast("onError");
+            listener.createToast(error.getMessage());
 
         }
 
         @Override
         public void onAudioLevel(float level) {
+//            listener.createToast("onAudioLevel");
 
         }
 
         @Override
         public void onListeningStarted() {
+//            listener.createToast("onStarted");
 
         }
 
         @Override
         public void onListeningCanceled() {
+//            listener.createToast("onStopped");
 
         }
 
         @Override
         public void onListeningFinished() {
+            listener.createToast("onFinished");
 
         }
     };
@@ -70,11 +78,15 @@ public class ApiAi extends AbstractApi {
     @Override
     void startListeningImpl() {
         aiService.startListening();
+        listener.createToast("start listening");
+
     }
 
     @Override
     void stopListeningImpl() {
         aiService.stopListening();
+        listener.createToast("stop listening");
+
     }
 
     @Override

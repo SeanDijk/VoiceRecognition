@@ -11,6 +11,8 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled = true
+
     }
     buildTypes {
         release {
@@ -20,6 +22,10 @@ android {
     }
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:1.3.9'
+    }
+    packagingOptions {
+        exclude 'META-INF/NOTICE' // will not include NOTICE file
+        exclude 'META-INF/LICENSE' // will not include LICENSE file
     }
 }
 
@@ -41,7 +47,7 @@ dependencies {
     compile 'commons-io:commons-io:2.4'
 
 
-    compile group: 'com.google.cloud', name: 'google-cloud-speech', version: '0.17.1-alpha'
+    //compile group: 'com.google.cloud', name: 'google-cloud-speech', version: '0.17.1-alpha'
 
 
 }

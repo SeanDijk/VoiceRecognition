@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.hhspls.voicerecognition.api.AbstractApi;
 
@@ -16,7 +17,7 @@ import com.hhspls.voicerecognition.api.AbstractApi;
  * Use the {@link SpeechFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SpeechFragment extends Fragment {
+public class SpeechFragment extends Fragment implements AbstractApi.ListenListener{
     private static final String ARG_API_INTERFACE = "ARG_API_INTERFACE";
 
     AbstractApi apiInterface;
@@ -42,6 +43,8 @@ public class SpeechFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             apiInterface = (AbstractApi) getArguments().getSerializable(ARG_API_INTERFACE);
+            apiInterface.setListener(this);
+            Toast.makeText(getContext(), "test", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -75,5 +78,10 @@ public class SpeechFragment extends Fragment {
             }
         });
 
+    }
+
+    @Override
+    public void createToast(String text) {
+        Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
     }
 }
