@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">VoiceRecognition</string>
+    <string name="title_api_ai">Api.ai</string>
+    <string name="title_google_speech">Google Speech</string>
+    <string name="title_notifications">Placeholder</string>
+    <string name="title_notifications2">Placeholder</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="start_recording">Start Recording</string>
+    <string name="stop_recording">Stop Recording</string>
+    <string name="title_wit_api">Wit.ai</string>
+</resources>
