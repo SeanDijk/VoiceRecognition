@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,6 +36,10 @@ public class WitAi extends AbstractApi {
     private String AUTH_TOKEN = "Bearer 2325MDBMKJQS66BM4SDRXBRZS4QE2G2D";
     private String BaseURL = "https://api.wit.ai/";
 
+    //
+    //Toggle between GETRequest and POSTRequest.
+    private boolean test = true;
+
     private MediaRecorder recorder;
 
     public WitAi(Context context) {
@@ -43,7 +48,16 @@ public class WitAi extends AbstractApi {
 
     @Override
     void startListeningImpl() {
-        try{
+        if (test) {
+            startTest();
+        } else {
+            start();
+        }
+    }
+
+    private void start() {
+        try {
+            test = false;
             recorder = new MediaRecorder();
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -52,24 +66,26 @@ public class WitAi extends AbstractApi {
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             recorder.prepare();
             recorder.start();
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.i(TAG, "Error while startListening " + e);
         }
     }
 
     @Override
     void stopListeningImpl() {
-        //TODO: End audio stream when button is clicked or after 10 seconds because max. Then send POST Request
-        try{
-            recorder.stop();
+        //TODO: End audio stream when button is clicked or after 10 seconds because max allowed 10 sec. Then send POST Request
+        if (!test) {
+            try {
+                recorder.stop();
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-            String currentDateandTime = sdf.format(new Date());
-            String URLParameter = "speech?v="+ currentDateandTime;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                String currentDateandTime = sdf.format(new Date());
+                String URLParameter = "speech?v=" + currentDateandTime;
 
-            new POSTMethod().execute(BaseURL + URLParameter);
-        }catch (Exception e){
-            Log.i(TAG, "Error while stopListening " + e);
+                new POSTMethod().execute(BaseURL + URLParameter);
+            } catch (Exception e) {
+                Log.i(TAG, "Error while stopListening " + e);
+            }
         }
     }
 
@@ -98,8 +114,8 @@ public class WitAi extends AbstractApi {
                 urlConnection.setDoInput(true);
                 urlConnection.setDoOutput(true);
 
-                IOUtils.copy(new FileInputStream(getLatestRecording()), urlConnection.getOutputStream());
-//                String res = IOUtils.toString(urlConnection.getInputStream());
+                OutputStream outputStream = urlConnection.getOutputStream();
+                outputStream.write(getLatestRecordingByteArray());
 
                 int responseCode = urlConnection.getResponseCode();
                 Log.i(TAG, "Response_code = " + responseCode);
@@ -107,6 +123,7 @@ public class WitAi extends AbstractApi {
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     server_response = readStream(urlConnection.getInputStream());
                 }
+                return server_response;
             } catch (IOException e) {
                 Log.i(TAG, "Error while POSTMethod " + e);
             } finally {
@@ -181,22 +198,29 @@ public class WitAi extends AbstractApi {
             }
         }
         Log.i(TAG, response.toString());
+
+
+
         return response.toString();
     }
 
     private void startTest() {
         try {
-            String URLParameter = "message?q=This%20is%20a%20test";
+            String URLParameter = "message?q=Hello";
             new GETMethod().execute(BaseURL + URLParameter);
         } catch (Exception e) {
             Log.i(TAG, "error while starting to listen");
         }
     }
 
-    private File getLatestRecording(){
+    private byte[] getLatestRecordingByteArray() {
         File sdcard = Environment.getExternalStorageDirectory();
         File file = new File(sdcard, "myrecording.mp3");
-//        byte[] data = new byte[(int) file.length()];
-        return file;
+        return new byte[(int) file.length()];
+    }
+
+    private File getLatestRecording() {
+        File sdcard = Environment.getExternalStorageDirectory();
+        return new File(sdcard, "myrecording.mp3");
     }
 }

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hhspls.voicerecognition.api.AbstractApi;
@@ -21,10 +22,8 @@ public class SpeechFragment extends Fragment implements AbstractApi.ListenListen
     private static final String ARG_API_INTERFACE = "ARG_API_INTERFACE";
 
     AbstractApi apiInterface;
-
-
     Button button;
-
+    TextView tvResult;
 
     public SpeechFragment() {
         // Required empty public constructor
@@ -59,6 +58,8 @@ public class SpeechFragment extends Fragment implements AbstractApi.ListenListen
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         button = (Button) view.findViewById(R.id.button);
+        tvResult = (TextView) view.findViewById(R.id.tvResult);
+        //TODO: Get result from different APIs
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
