@@ -46,6 +46,7 @@ dependencies {
 // api.ai SDK dependencies
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'commons-io:commons-io:2.4'
+    compile 'com.android.volley:volley:1.0.0'
 
 
     //compile group: 'com.google.cloud', name: 'google-cloud-speech', version: '0.17.1-alpha'

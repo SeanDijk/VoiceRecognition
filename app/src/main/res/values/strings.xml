@@ -11,4 +11,5 @@
     <string name="stop_recording">Stop Recording</string>
     <string name="title_wit_api">Wit.ai</string>
     <string name="test_message">This is a test</string>
+    <string name="result_error">Error</string>
 </resources>

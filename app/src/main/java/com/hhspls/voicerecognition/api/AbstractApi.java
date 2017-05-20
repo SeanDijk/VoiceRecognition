@@ -14,6 +14,7 @@ public abstract class AbstractApi implements Serializable {
     private static final String TAG = "AbstractApi";
     boolean isListening = false;
     public ListenListener listener;
+    boolean isTesting;
 
     public AbstractApi(Context context) {
     }
@@ -53,8 +54,15 @@ public abstract class AbstractApi implements Serializable {
         return isListening;
     }
 
-
     public interface ListenListener {
         void createToast(String text);
+    }
+
+    public boolean isTesting() {
+        return isTesting;
+    }
+
+    public void setTesting(boolean testing) {
+        isTesting = testing;
     }
 }

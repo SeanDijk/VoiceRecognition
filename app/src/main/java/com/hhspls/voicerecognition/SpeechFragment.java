@@ -9,8 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,6 +42,8 @@ public class SpeechFragment extends Fragment implements AbstractApi.ListenListen
     Button button;
     TextView tvResult;
     TextView tvResultCode;
+    ToggleButton toggleButton;
+    ImageView imageView;
 
     public SpeechFragment() {
         // Required empty public constructor
@@ -75,8 +80,20 @@ public class SpeechFragment extends Fragment implements AbstractApi.ListenListen
         button = (Button) view.findViewById(R.id.button);
         tvResult = (TextView) view.findViewById(R.id.tvResult);
         tvResultCode = (TextView) view.findViewById(R.id.tvResultCode);
+        toggleButton = (ToggleButton) view.findViewById(R.id.tbRequestMethod);
+        imageView = (ImageView) view.findViewById(R.id.logo);
 
-        //TODO: Get result from different APIs
+//        try{
+//            if(imageView.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.wit_ai_960).getConstantState())){
+//                toggleButton.setVisibility(View.VISIBLE);
+//            }
+//            else{
+//                toggleButton.setVisibility(View.INVISIBLE);
+//            }
+//        }catch (NullPointerException e){
+//            //Do nothing
+//        }
+
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,18 +107,40 @@ public class SpeechFragment extends Fragment implements AbstractApi.ListenListen
                     tvResult.setText(R.string.test_message);
                 } else {
                     try {
+                        //TODO: Recognize what class the object is ?
                         WitOutcome witOutcome = (WitOutcome) apiInterface.stopListening();
+//                        Object object = apiInterface.stopListening();
 
-//                        if(object.equals(WitOutcome.class)){
-//                            WitOutcome witOutcome = (WitOutcome) object;
-                            System.out.println(witOutcome.get_entities().toString());
+                        if (witOutcome != null) {
+//                            if (object.equals(WitOutcome.class)) {
+//                                WitOutcome witOutcome = (WitOutcome) object;
+
                             tvResult.setText(witOutcome.get_entities().toString());
-//                        }
 
-                        button.setText(getContext().getText(R.string.start_recording));
+//                            } else if (object.equals(GoogleOutcome.class)) {
+//                                something like this ? :D
+//                            }
+
+                            button.setText(getContext().getText(R.string.start_recording));
+//                        }
+                        } else {
+                            tvResult.setText(R.string.result_error);
+                        }
+//
                     } catch (Exception e) {
                         Log.i(TAG, "Error while GSON " + e);
                     }
+                }
+            }
+        });
+
+        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(apiInterface.isTesting()){
+                    apiInterface.setTesting(false);
+                }else{
+                    apiInterface.setTesting(true);
                 }
             }
         });
