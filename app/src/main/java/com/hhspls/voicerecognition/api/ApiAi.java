@@ -83,10 +83,10 @@ public class ApiAi extends AbstractApi {
     }
 
     @Override
-    void stopListeningImpl() {
+    Object stopListeningImpl() {
         aiService.stopListening();
         listener.createToast("stop listening");
-
+        return null;
     }
 
     @Override

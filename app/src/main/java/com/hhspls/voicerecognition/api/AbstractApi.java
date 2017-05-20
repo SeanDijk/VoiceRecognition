@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.Serializable;
-import java.util.List;
+
 
 /**
  * Created by Sean on 15-5-2017.
@@ -32,9 +32,9 @@ public abstract class AbstractApi implements Serializable {
         }
     }
 
-    final public void stopListening() {
+    final public Object stopListening() {
         isListening = false;
-        stopListeningImpl();
+        return stopListeningImpl();
     }
 
     final public void cancel() {
@@ -44,7 +44,7 @@ public abstract class AbstractApi implements Serializable {
 
     abstract void startListeningImpl();
 
-    abstract void stopListeningImpl();
+    abstract Object stopListeningImpl();
 
     abstract void cancelImpl();
 

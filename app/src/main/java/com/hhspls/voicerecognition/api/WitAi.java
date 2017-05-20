@@ -6,6 +6,10 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.hhspls.voicerecognition.models.WitOutcome;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
@@ -37,42 +41,42 @@ public class WitAi extends AbstractApi {
     private String BaseURL = "https://api.wit.ai/";
 
     //
-    //Toggle between GETRequest and POSTRequest.
+    //  Toggle between GETRequest (TEST with Hardcoded String) and POSTRequest(SEND RECORDED MP3).
     private boolean test = true;
+    private Gson gson;
 
     private MediaRecorder recorder;
 
     public WitAi(Context context) {
         super(context);
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setDateFormat("M/d/yy hh:mm a");
+        gson = gsonBuilder.create();
     }
 
     @Override
     void startListeningImpl() {
-        if (test) {
-            startTest();
-        } else {
-            start();
-        }
-    }
-
-    private void start() {
         try {
-            test = false;
-            recorder = new MediaRecorder();
-            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            recorder.setOutputFile(Environment.getExternalStorageDirectory()
-                    .getAbsolutePath() + "/myrecording.mp3");
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-            recorder.prepare();
-            recorder.start();
+            if (test) {
+                //Do nothing
+            } else {
+                recorder = new MediaRecorder();
+                recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+                recorder.setOutputFile(Environment.getExternalStorageDirectory()
+                        .getAbsolutePath() + "/myrecording.mp3");
+                recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+                recorder.prepare();
+                recorder.start();
+            }
         } catch (Exception e) {
-            Log.i(TAG, "Error while startListening " + e);
+            Log.i(TAG, "Error while recording " + e);
         }
     }
 
     @Override
-    void stopListeningImpl() {
+    WitOutcome stopListeningImpl() {
         //TODO: End audio stream when button is clicked or after 10 seconds because max allowed 10 sec. Then send POST Request
         if (!test) {
             try {
@@ -81,12 +85,23 @@ public class WitAi extends AbstractApi {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
                 String currentDateandTime = sdf.format(new Date());
                 String URLParameter = "speech?v=" + currentDateandTime;
+                String tempString = new POSTMethod().execute(BaseURL + URLParameter).get();
 
-                new POSTMethod().execute(BaseURL + URLParameter);
+                return gson.fromJson(tempString, WitOutcome.class);
             } catch (Exception e) {
                 Log.i(TAG, "Error while stopListening " + e);
             }
+        } else {
+            try {
+                String URLParameter = "message?q=Hello";
+                String tempString = new GETMethod().execute(BaseURL + URLParameter).get();
+
+                return gson.fromJson(tempString, WitOutcome.class);
+            } catch (Exception e) {
+                Log.i(TAG, "Error while sending test message");
+            }
         }
+        return null;
     }
 
     @Override
@@ -118,12 +133,11 @@ public class WitAi extends AbstractApi {
                 outputStream.write(getLatestRecordingByteArray());
 
                 int responseCode = urlConnection.getResponseCode();
-                Log.i(TAG, "Response_code = " + responseCode);
 
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     server_response = readStream(urlConnection.getInputStream());
+                    return server_response;
                 }
-                return server_response;
             } catch (IOException e) {
                 Log.i(TAG, "Error while POSTMethod " + e);
             } finally {
@@ -136,7 +150,7 @@ public class WitAi extends AbstractApi {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Log.e("Response", "" + server_response);
+//            Log.e("Response", "" + server_response);
         }
     }
 
@@ -160,6 +174,7 @@ public class WitAi extends AbstractApi {
 
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     server_response = readStream(urlConnection.getInputStream());
+                    return server_response;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -173,7 +188,7 @@ public class WitAi extends AbstractApi {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Log.e("Response", "" + server_response);
+//            Log.e("Response", "" + server_response);
         }
     }
 
@@ -197,20 +212,8 @@ public class WitAi extends AbstractApi {
                 }
             }
         }
-        Log.i(TAG, response.toString());
-
-
-
+        Log.i(TAG, "readStream response: " + response.toString());
         return response.toString();
-    }
-
-    private void startTest() {
-        try {
-            String URLParameter = "message?q=Hello";
-            new GETMethod().execute(BaseURL + URLParameter);
-        } catch (Exception e) {
-            Log.i(TAG, "error while starting to listen");
-        }
     }
 
     private byte[] getLatestRecordingByteArray() {

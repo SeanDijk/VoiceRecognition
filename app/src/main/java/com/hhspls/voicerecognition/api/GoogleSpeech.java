@@ -30,8 +30,8 @@ public class GoogleSpeech extends AbstractApi {
     }
 
     @Override
-    void stopListeningImpl() {
-
+    Object stopListeningImpl() {
+        return null;
     }
 
     @Override
